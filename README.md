@@ -1,4 +1,4 @@
-# Nvim Snippets for $\LaTeX
+# Nvim Snippets for LaTeX
 
 Based on [Castel's Snippets](https://castel.dev/post/lecture-notes-1/),
 our snippets are specially tailored to satisfy the needs of CS learning.

@@ -134,7 +134,7 @@ $0
 endsnippet
 
 context "math()"
-snippet par "parenthesis" wA
+snippet pr "parenthesis" wA
 ($1)
 endsnippet
 
@@ -184,8 +184,13 @@ snippet '([A-EI-Za-ei-z]|Pi|Zeta|Lam|Alpha|Beta|Gamma|Eta|Xi|Sigma|Delta|pi|lam|
 endsnippet
 
 context "math()"
-snippet '([A-EI-Za-ei-z])_(\w\w)' "auto subscript2" wrA
-`!p snip.rv = match.group(1)`_{`!p snip.rv = match.group(2)`$1}
+snippet '_(\w\w)' "auto subscript2" irA
+_{`!p snip.rv = match.group(1)`$1}
+endsnippet
+
+context "math()"
+snippet '\^(\w\w)' "auto power" irA
+^{`!p snip.rv = match.group(1)`$1}
 endsnippet
 
 context "math()"

@@ -64,52 +64,10 @@ snippet --- "cdots" iA
 \cdots
 endsnippet
 
-snippet table "Table environment" b
-\begin{table}[${1:htpb}]
-	\centering
-	\caption{${2:caption}}
-	\label{tab:${3:label}}
-	\begin{tabular}{${5:c}}
-	$0${5/((?<=.)c|l|r)|./(?1: & )/g}
-	\end{tabular}
-\end{table}
-endsnippet
-
-snippet fig "Figure environment" b
-\begin{figure}[${1:htpb}]
-	\centering
-	${2:\includegraphics[width=0.8\textwidth]{$3}}
-	\caption{${4:$3}}
-	\label{fig:${5:${3/\W+/-/g}}}
-\end{figure}
-endsnippet
-
 snippet code "Code environment" b
 \begin{lstlisting}[language=${1:cpp}] 
   $0
 \end{lstlisting}
-endsnippet
-
-snippet enum "Enumerate" bA
-\begin{enumerate}
-	\item $0
-\end{enumerate}
-endsnippet
-
-snippet item "Itemize" bA
-\begin{itemize}
-	\item $0
-\end{itemize}
-endsnippet
-
-snippet desc "Description" b
-\begin{description}
-	\item[$1] $0
-\end{description}
-endsnippet
-
-snippet pac "Package" b
-\usepackage[${1:options}]{${2:package}}$0
 endsnippet
 
 snippet => "implies" Ai
@@ -139,18 +97,8 @@ $0
 endsnippet
 
 context "math()"
-snippet bra "langle" iA
-\langle
-endsnippet
-
-context "math()"
-snippet ket "rangle" iA
-\rangle
-endsnippet
-
-context "math()"
 snippet ran "range" iA
-[$1]_{$2}^{$3}
+\left[$1\right]_{$2}^{$3}
 endsnippet
 
 context "math()"
@@ -184,18 +132,18 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 endsnippet
 
 context "math()"
-snippet '([A-EI-Za-ei-z]|Pi|Zeta|Lam|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta|pi|lam|alpha|phi|theta|beta|gamma|eta|xi|sigma|delta|zeta)(\d)' "auto subscript" wrA
+snippet '([A-EI-Za-ei-z])(\d)' "auto subscript" wrA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
 context "math()"
-snippet '_(\w\w)' "auto subscript2" ir
-_{`!p snip.rv = match.group(1)`$1}
+snippet '(pi|lambda|alpha|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta|zeta)(\d)' "auto subscript" wrA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
 context "math()"
-snippet '\^(\w\w)' "auto power" ir
-^{`!p snip.rv = match.group(1)`$1}
+snippet '(Pi|Zeta|Lambda|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)(\d)' "auto subscript" wrA
+`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
 context "math()"
@@ -231,21 +179,6 @@ k, m, n = symbols('k m n', integer=True)
 f, g, h = symbols('f g h', cls=Function)
 init_printing()
 snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').replace('{', '(').replace('}', ')') + ')')
-`
-endsnippet
-
-priority 1000
-snippet math "mathematicablock" w
-math $1 math
-endsnippet
-
-priority 10000
-snippet 'math(.*)math' "math" wr
-`!p
-import subprocess
-code = match.group(1)
-code = 'ToString[' + code + ', TeXForm]'
-snip.rv = subprocess.check_output(['wolframscript', '-code', code])
 `
 endsnippet
 
@@ -344,39 +277,9 @@ snippet AA "forall" iA
 \forall 
 endsnippet
 
-snippet plot "Plot" w
-\begin{figure}[$1]
-	\centering
-	\begin{tikzpicture}
-		\begin{axis}[
-			xmin= ${2:-10}, xmax= ${3:10},
-			ymin= ${4:-10}, ymax = ${5:10},
-			axis lines = middle,
-		]
-			\addplot[domain=$2:$3, samples=${6:100}]{$7};
-		\end{axis}
-	\end{tikzpicture}
-	\caption{$8}
-	\label{${9:$8}}
-\end{figure}
-endsnippet
-
-snippet tikz "Tikz node" w
-\node[$5] (${1/[^0-9a-zA-Z]//g}${2}) ${3:at (${4:0,0}) }{$${1}$};
-endsnippet
-
 context "math()"
 snippet mcal "mathcal" iA
 \mathcal{$1}
-endsnippet
-
-snippet lll "l" iA
-\ell
-endsnippet
-
-context "math()"
-snippet nabl "nabla" iA
-\nabla 
 endsnippet
 
 context "math()"
@@ -387,11 +290,6 @@ endsnippet
 priority 100
 snippet ** "cdot" iA
 \cdot 
-endsnippet
-
-context "math()"
-snippet norm "norm" iA
-\|$1\|
 endsnippet
 
 context "math()"
@@ -406,13 +304,48 @@ snippet int "integral" iA
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(Pi|Zeta|Lam|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta|pi|zeta|lam|alpha|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
+snippet '(?<!\\)(pi|zeta|lambda|alpha|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!\\)(arcsin|arccos|arctan|arccot|arccsc|arcsec|sin|cos|tan|arccot|cot|csc|sec|ln|log|exp|star|perp)' "ln" rwA
+snippet '(?<!\\)(Pi|Zeta|Lambda|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)' "ln" rwA
+\\`!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(asin) "arcsin" rwA
+\arcsin
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(acos) "arccos" rwA
+\arccos
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(atan) "arctan" rwA
+\arctan
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(acot) "arccot" rwA
+\arccot
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(acsc) "arccsc" rwA
+\arccsc
+endsnippet
+
+context "math()"
+snippet '(?<!\\)(asec) "arcsec" rwA
+\arcsec
 endsnippet
 
 priority 100
@@ -443,8 +376,8 @@ snippet comp "complement" iA
 endsnippet
 
 context "math()"
-snippet \\\ "setminus" iA
-\setminus
+snippet tran "transpose" iA
+^{T}
 endsnippet
 
 snippet >> ">>" iA
@@ -459,13 +392,13 @@ snippet ~~ "~" iA
 \sim 
 endsnippet
 
-context "math()"
-snippet set "set" iA
-\\{$1\\}
+snippet || "abs" iA
+\left| $1 \right|
 endsnippet
 
-snippet || "mid" iA
-\mid 
+context "math()"
+snippet set "set" iA
+\left\\{$1\right\\}
 endsnippet
 
 context "math()"
@@ -527,31 +460,10 @@ snippet <> "hokje" iA
 endsnippet
 
 context "math()"
-snippet '(?<!i)sts' "text subscript" irA
-_\text{$1}
-endsnippet
-
-context "math()"
-snippet tt "text" iA
-\text{$1}
-endsnippet
-
-context "math()"
 snippet case "cases" iA
 \begin{cases}
 	$1
 \end{cases}
-endsnippet
-
-snippet SI "SI" iA
-\SI{$1}{$2}
-endsnippet
-
-snippet bigfun "Big function" iA
-\begin{align*}
-	$1: $2 &\longrightarrow $3 \\\\
-	$4 &\longmapsto $1($4) = 
-.\end{align*}
 endsnippet
 
 snippet cvec "column vector" iA

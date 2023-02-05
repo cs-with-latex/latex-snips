@@ -98,7 +98,7 @@ endsnippet
 
 context "math()"
 snippet ran "range" iA
-\left[$1\right]_{$2}^{$3}
+\left[$1\right]_{${2:-\infty}}^{${3:+\infty}}
 endsnippet
 
 context "math()"
@@ -137,17 +137,7 @@ snippet '([A-EI-Za-ei-z])(\d)' "auto subscript" wrA
 endsnippet
 
 context "math()"
-snippet '(pi|lambda|alpha|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta|zeta)(\d)' "auto subscript" wrA
-`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
-endsnippet
-
-context "math()"
-snippet '(Pi|Zeta|Lambda|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)(\d)' "auto subscript" wrA
-`!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
-endsnippet
-
-context "math()"
-snippet 'd([A-Za-ce-z])' "auto derivative" wrA
+snippet 'd([A-Za-ce-hj-z])' "auto derivative" wrA
 \mathrm{d}`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -161,8 +151,9 @@ snippet 'ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
 \frac{\mathrm{d}`!p snip.rv = match.group(1)`}{\mathrm{d}`!p snip.rv = match.group(2)`}
 endsnippet
 
+priority 100
 context "math()"
-snippet '([fghFGH]|f'|g'|h'|F'|G'|H')([A-Za-z])' "auto function" wrA
+snippet '([fghFGH]|f'|g'|h'|F'|G'|H')(\w)' "auto function" wrA
 `!p snip.rv = match.group(1)`(`!p snip.rv = match.group(2)`)
 endsnippet
 
@@ -182,8 +173,26 @@ snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').re
 `
 endsnippet
 
-snippet == "equals" iA
-&= $1 \\\\
+snippet mop "mathop" iA
+\mathop{$1}
+endsnippet
+
+snippet max "max" iA
+\mathop{\max}
+endsnippet
+
+snippet min "min" iA
+\mathop{\min}
+endsnippet
+
+priority 100
+snippet == "equals direct" iA
+&=
+endsnippet
+
+priority 200
+snippet == "equals" wA
+\\\\&=
 endsnippet
 
 snippet != "equals" iA
@@ -251,7 +260,7 @@ snippet td "to the ... power" iA
 ^{$1}
 endsnippet
 
-snippet sb "subscript" iA
+snippet __ "subscript" iA
 _{$1}
 endsnippet
 
@@ -299,53 +308,68 @@ endsnippet
 
 priority 300
 context "math()"
-snippet int "integral" iA
-\int_{${1:-\infty}}^{${2:\infty}}
+snippet dint "integral" iA
+\int_{${1:-\infty}}^{${2:+\infty}}
 endsnippet
 
+priority 100
+context "math()"
+snippet int "integral" iA
+\int
+endsnippet
+
+priority 300
 context "math()"
 snippet '(?<!\\)(pi|zeta|lambda|alpha|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
+priority 300
 context "math()"
 snippet '(?<!\\)(Pi|Zeta|Lambda|Alpha|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
+priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(asin) "arcsin" rwA
-\arcsin
+snippet '(?<!\\)asin' "arcsin" rwA
+\arcsin 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(acos) "arccos" rwA
-\arccos
+snippet '(?<!\\)acos' "arccos" rwA
+\arccos 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(atan) "arctan" rwA
-\arctan
+snippet '(?<!\\)atan' "arctan" rwA
+\arctan 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(acot) "arccot" rwA
-\arccot
+snippet '(?<!\\)acot' "arccot" rwA
+\arccot 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(acsc) "arccsc" rwA
-\arccsc
+snippet '(?<!\\)acsc' "arccsc" rwA
+\arccsc 
 endsnippet
 
+priority 200
 context "math()"
-snippet '(?<!\\)(asec) "arcsec" rwA
-\arcsec
+snippet '(?<!\\)asec' "arcsec" rwA
+\arcsec 
 endsnippet
 
 priority 100

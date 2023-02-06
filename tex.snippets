@@ -9,6 +9,111 @@ def env(name):
 	[x,y] = vim.eval("vimtex#env#is_inside('" + name + "')") 
 	return x != '0' and y != '0'
 
+def is_word(ch):
+	return ch >= 'A' and ch <= 'z' or ch >= '0' and ch <= '9'
+
+def is_char(ch):
+	return ch >= 'A' and ch <= 'z'
+
+# read predicate
+def rp(str, pred):
+	i = 1
+	while pred(str[i]):
+		i += 1
+	return i
+
+# read normal bracket
+def rnb(str):
+	return rb(str, lambda ch: ch == '[' or ch == '(', lambda ch: ch == ']' or ch == ')')
+
+# read curly bracket
+def rcb(str):
+	return rb(str, lambda ch: ch == '{', lambda ch: ch == '}')
+
+def depth_curly(str):
+	return depth(str, lambda ch: ch == '{', lambda ch: ch == '}')
+
+def depth(str, pred_in, pred_out):
+	if not str:
+		return 0
+	if len(str) == 0:
+		return 0
+	d = 0
+	for ch in str:
+		if pred_in(ch):
+			d += 1
+		if pred_out(ch):
+			d -= 1
+	return d
+
+# read bracket assuming the first is '[' or '('
+# input should be like (str)
+def rb(str, pred_in, pred_out):
+	i = 1
+	depth = 1
+	while depth > 0:
+		if pred_in(str[i]):
+			depth += 1
+		if pred_out(str[i]):
+			depth -= 1
+		i += 1
+	return i
+
+# return the splitted result after trimming ^ and _
+def trim(str):
+	try:
+		if str[0] == ' ':
+			a, b = trim(str[1:])
+			return (str[0] + a, b)
+		elif str[0] == '_' or str[0] == '^':
+			if is_word(str[1]):
+				a, b = trim(str[2:])
+				return (str[:2] + a, b)
+			else:
+				a, b = trim(str[1:])
+				return (str[0] + a, b)
+		elif str[0] == '{':
+			i = rcb(str)
+			a, b = trim(str[i:])
+			return (str[:i] + a, b)
+		else:
+			return ('', str)
+	except:
+		return ('', str)
+
+
+def unit(str):
+	result = 0
+	try:
+		# ignore _ and ^
+		if str[0] == '_' or str[0] == '^':
+			if is_word(str[1]):
+				return unit(str[2:])
+			else:
+				return unit(str[1:])
+		# ignore everything in curly brackets
+		elif str[0] == '{':
+			return unit(str[rcb(str):])
+		# view largest parentheses as one
+		elif str[0] == '(' or str[0] == '[':
+			result = 1
+			return unit(str[rnb(str):])+1
+		# ignore blank
+		elif str[0] == ' ':
+			return 0 
+		# each letter or keyword count as one
+		elif str[0] == '\\':
+			result = 1
+			return unit(str[rp(str, is_char):])+1
+		# series of number and word count as one
+		elif is_word(str[0]):
+			result = 1
+			return unit(str[rp(str, is_word):])+1
+		# ignore unknown character
+		else:
+			return unit(str[1:])
+	except:
+		return result
 endglobal
 
 snippet template "Basic template" b
@@ -83,6 +188,11 @@ snippet iff "iff" Ai
 \iff
 endsnippet
 
+context "math()"
+snippet pr "parentheses" Ai
+\left($1\right)
+endsnippet
+
 snippet mk "Math" wA
 $${1}$
 endsnippet
@@ -110,6 +220,7 @@ snippet / "Fraction" i
 \\frac{${VISUAL}}{$1}
 endsnippet
 
+priority 800
 context "math()"
 snippet '((\d+)|(\d*)(\\)?([A-Za-z]+)((\^|_)(\{\d+\}|\d))*)/' "symbol frac" wrA
 \\frac{`!p snip.rv = match.group(1)`}{$1}
@@ -125,19 +236,22 @@ i = len(stripped) - 1
 while True:
 	if stripped[i] == ')': depth += 1
 	if stripped[i] == '(': depth -= 1
-	if depth == 0: break;
+	if depth == 0:
+		break
 	i-=1
 snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 `{$1}
 endsnippet
 
+priority 100
 context "math()"
 snippet '([A-EI-Za-ei-z])(\d)' "auto subscript" wrA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
+priority 100
 context "math()"
-snippet 'd([A-Za-ce-hj-z])' "auto derivative" wrA
+snippet 'd([A-Za-cf-hj-z])' "auto derivative" wrA
 \mathrm{d}`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -152,9 +266,9 @@ snippet 'ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
 endsnippet
 
 priority 100
-context "math()"
-snippet '([fghFGH]|f'|g'|h'|F'|G'|H')(\w)' "auto function" wrA
-`!p snip.rv = match.group(1)`(`!p snip.rv = match.group(2)`)
+context "math() and depth_curly(match.group(2)) == 0"
+snippet '((?:[fghFGH]|\\Phi)(?:|_.|_{.*})(?:|\^.|\^{(.*)}))(\w)' "auto function" wrA
+`!p snip.rv = match.group(1)`\\left(`!p snip.rv = match.group(3)`$1\\right)
 endsnippet
 
 snippet sympy "sympyblock " w
@@ -186,15 +300,18 @@ snippet min "min" iA
 endsnippet
 
 priority 100
+context "math()"
 snippet == "equals direct" iA
 &=
 endsnippet
 
 priority 200
+context "math()"
 snippet == "equals" wA
 \\\\&=
 endsnippet
 
+context "math()"
 snippet != "equals" iA
 \neq 
 endsnippet
@@ -207,6 +324,24 @@ endsnippet
 context "math()"
 snippet floor "floor" iA
 \left\lfloor $1 \right\rfloor
+endsnippet
+
+priority 300
+context "math()"
+snippet dia2 "diagonal matrix" iA
+\begin{pmatrix}$1&\\\\&$2\end{pmatrix}
+endsnippet
+
+priority 300
+context "math()"
+snippet dia3 "diagonal matrix" iA
+\begin{pmatrix}$1&&\\\\&$2&\\\\&&$3\end{pmatrix}
+endsnippet
+
+priority 300
+context "math()"
+snippet dia4 "diagonal matrix" iA
+\begin{pmatrix}$1&&&\\\\&$2&&\\\\&&$3&\\\\&&&$4\end{pmatrix}
 endsnippet
 
 snippet pmat "pmat" iA
@@ -246,18 +381,106 @@ endsnippet
 priority 100
 context "math()"
 snippet sr "^2" iA
-^2
+^{2}
+endsnippet
+
+context "math()"
+snippet "([fghFGH]|\\Phi)'" "auto derivative" irA
+`!p snip.rv=match.group(1)`^{'}
+endsnippet
+
+context "math()"
+snippet "([fghFGH]|\\Phi)\^{'}'" "auto double derivative" irA
+`!p snip.rv=match.group(1)`^{''}
+endsnippet
+
+context "math()"
+snippet "([fghFGH]|\\Phi)\^{''}'" "auto multiple derivative" irA
+`!p snip.rv=match.group(1)`^{^{($1)}}
+endsnippet
+
+priority 200
+context "math()"
+snippet '(sin|cos|tan|cot|sec|csc)((?:\s|\(|\\left\()\S+(?:\s|\)|\\right\)))psr' "^2 for func" irA
+`!p snip.rv=match.group(1)`^2`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)((?:|'+)(?:|_.|_{.*})(?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for func" irA
+`!p snip.rv=match.group(1)`^2`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^(\S)((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for single powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`2}`!p snip.rv=match.group(3)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^{(.+)}((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for dual powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`2}`!p snip.rv=match.group(3)`
 endsnippet
 
 priority 100
 context "math()"
 snippet cb "^3" iA
-^3
+^{3}
 endsnippet
 
+priority 200
+context "math()"
+snippet '(sin|cos|tan|cot|sec|csc)((?:\s|\(|\\left\()\S+(?:\s|\)|\\right\)))pcb' "^3 for func" irA
+`!p snip.rv=match.group(1)`^3`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)((?:|'+)(?:|_.|_{.*})(?:\(|\\left\()\S+(?:\)|\\right\)))pcb" "^3 for func" irA
+`!p snip.rv=match.group(1)`^3`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^(\S)((?:\(|\\left\()\S+(?:\)|\\right\)))pcb" "^3 for single powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`3}`!p snip.rv=match.group(3)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^{(.+)}((?:\(|\\left\()\S+(?:\)|\\right\)))pcb" "^3 for dual powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`3}`!p snip.rv=match.group(3)`
+endsnippet
+
+priority 100
 context "math()"
 snippet td "to the ... power" iA
 ^{$1}
+endsnippet
+
+priority 200
+context "math()"
+snippet '(sin|cos|tan|cot|sec|csc)((?:\s|\(|\\left\()\S+(?:\s|\)|\\right\)))ptd' "^n for func" irA
+`!p snip.rv=match.group(1)`^{$1}`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)((?:|'+)(?:|_.|_{.*})(?:\(|\\left\()\S+(?:\)|\\right\)))ptd" "^n for func" irA
+`!p snip.rv=match.group(1)`^{$1}`!p snip.rv=match.group(2)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^(\S)((?:\(|\\left\()\S+(?:\)|\\right\)))ptd" "^n for single powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`$1}`!p snip.rv=match.group(3)`
+endsnippet
+
+priority 300
+context "math()"
+snippet "([fghFGH]|\\Phi)\^{(.+)}((?:\(|\\left\()\S+(?:\)|\\right\)))ptd" "^n for dual powered func" irA
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`$1}`!p snip.rv=match.group(3)`
 endsnippet
 
 snippet __ "subscript" iA
@@ -320,7 +543,7 @@ endsnippet
 
 priority 300
 context "math()"
-snippet '(?<!\\)(pi|zeta|lambda|alpha|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
+snippet '(?<!\\)(pi|zeta|lambda|alpha|mu|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -334,6 +557,16 @@ priority 100
 context "math()"
 snippet '(?<!\\)(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
+endsnippet
+
+priority 100
+context "math()"
+context "unit(match.group(2)) > 1"
+snippet "(sin|cos|tan|cot|csc|sec|ln|log|exp|arcsin|arccos|arctan|arccot|arcsec|arccsc)\s(\S+)" "auto bracket for function" rwA
+`!p snip.rv=match.group(1)``!p 
+a, b = trim(match.group(2))
+snip.rv = a + '\\left(' + b
+`$1\\right)
 endsnippet
 
 priority 200
@@ -491,7 +724,7 @@ snippet case "cases" iA
 endsnippet
 
 snippet cvec "column vector" iA
-\begin{pmatrix} ${1:x}_${2:1}\\\\ \vdots\\\\ $1_${2:n} \end{pmatrix}
+\begin{pmatrix} $1 \\\\ $2 \\\\ \vdots\\\\ $3 \end{pmatrix}
 endsnippet
 
 priority 10

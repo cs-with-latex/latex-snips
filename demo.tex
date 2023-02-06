@@ -1,0 +1,191 @@
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage{listings} 
+\usepackage{xcolor} 
+\usepackage{amsmath}
+\lstset{
+  basicstyle=\tt,
+  keywordstyle=\color{purple}\bfseries,
+  identifierstyle=\color{brown!80!black},
+  commentstyle=\color{gray},
+  showstringspaces=false,
+  numbers=left,                
+  numberstyle=\small,               
+}
+\title{自动展开功能演示}
+\author{5eqn}
+\date{\today}
+\begin{document}
+  \maketitle
+  \section{抄来的功能}
+    自动下标:
+    \begin{lstlisting}[language=] 
+      a3+a2=a5
+      pi3=Pi3\end{lstlisting}
+    \[
+    \begin{aligned}
+      a_3+a_2=a_5
+      \\\pi_3=\Pi_3
+    .\end{aligned}
+    \]
+    
+    自动分数:
+    \begin{lstlisting}[language=] 
+      1/2
+      pi/1+2<TAB>+3
+      (1+((1+4)+5))/1+4
+      //114<TAB>514\end{lstlisting}
+    \[
+    \begin{aligned}
+      \frac{1}{2}
+      \\\frac{\pi}{1+2}+3
+      \\\frac{1+((1+4)+5)}{1+4}
+      \\\frac{114}{514}
+    .\end{aligned}
+    \]
+    
+  \section{预制函数自动括号}
+    分数中有减号不形成括号: 
+    \begin{lstlisting}[language=]
+      sinpi/2-x
+      asin//lambda+1<TAB>mu+1\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin \frac{\pi}{2-x}
+      \\ \arcsin \frac{\lambda+1}{\mu+1}
+    .\end{aligned}
+    \]
+
+    需要括号的时候自动括号: 
+    \begin{lstlisting}[language=] 
+      sinpi/2<TAB>-x
+      atanxi1+xi2\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin\left(\frac{\pi}{2}-x\right)
+      \\ \arctan \left(\xi_1+\xi_2\right)
+    .\end{aligned}
+    \]
+
+    不需要括号的时候用空格表示: 
+    \begin{lstlisting}[language=] 
+      sinpi/2<TAB> -x
+      atan2 -x\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin \frac{\pi}{2} -x
+      \\ \arctan 2 -x
+    .\end{aligned}
+    \]
+    
+    对 sin 追加平方: 
+    \begin{lstlisting}[language=] 
+      sinpi/2<TAB>-x<TAB>psr
+      sinx psr\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin^2\left(\frac{\pi}{2}-x\right)
+      \\ \sin^2 x 
+    .\end{aligned}
+    \]
+    
+    普通的 sin 平方: 
+    \begin{lstlisting}[language=] 
+      sinsrpi/2<TAB>-x
+      sinsrx\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin^{2}\left(\frac{\pi}{2}-x\right)
+      \\ \sin ^{2}x
+    .\end{aligned}
+    \]
+    
+    对 sin 的参数平方: 
+    \begin{lstlisting}[language=] 
+      sinpi/2<TAB>-x<TAB>sr
+      sinxsr\end{lstlisting}
+    \[
+    \begin{aligned}
+      \sin\left(\frac{\pi}{2}-x\right)^{2}
+      \\ \sin x^{2}
+    .\end{aligned}
+    \]
+    
+  \section{自定义函数和导数}
+    导数: 
+    \begin{lstlisting}[language=] 
+      f'x+2
+      Phi'3\end{lstlisting}
+    \[
+    \begin{aligned}
+      f^{'}\left(x+2\right)
+      \\ \Phi^{'}\left(3\right)
+    .\end{aligned}
+    \]
+    
+    二阶导: 
+    \begin{lstlisting}[language=] 
+      f''x+2
+      g''3\end{lstlisting}
+    \[
+    \begin{aligned}
+      f^{''}\left(x+2\right)
+      \\ g^{''}\left(3\right)
+    .\end{aligned}
+    \]
+    
+    任意阶导: 
+    \begin{lstlisting}[language=] 
+      f'''n+1<TAB>x+2
+      H'''n<TAB>x<TAB>+2\end{lstlisting}
+    \[
+    \begin{aligned}
+      f^{^{(n+1)}}\left(x+2\right)\\
+      H^{^{(n)}}\left(x\right)+2
+    .\end{aligned}
+    \]
+    
+    任意阶导追加平方: 
+    \begin{lstlisting}[language=] 
+      f'''n+1<TAB>x+2<TAB>psr
+      G'''7<TAB>x<TAB>psr\end{lstlisting}
+    \[
+    \begin{aligned}
+      f^{^{(n+1)}2}\left(x+2\right)\\
+      g^{^{(7)}2}\left(x\right)
+    .\end{aligned}
+    \]
+    
+    任意阶导追加任意次方: 
+    \begin{lstlisting}[language=] 
+      f'''n1<TAB>x+2<TAB>ptd5
+      F'''11<TAB>14<TAB>ptd45\end{lstlisting}
+    \[
+    \begin{aligned}
+      f^{^{(n_1)}5}\left(x+2\right)
+      \\ F^{^{(11)}45}\left(14\right)
+    .\end{aligned}
+    \]
+    
+  \section{线性代数}
+    快速书写矩阵: 
+    \begin{lstlisting}[language=] 
+      pma 1 2 3  4 5 6  7 8 9 t
+      Vma 1/2<TAB> 2/3<TAB>  3/4<TAB> 4/5<TAB> t\end{lstlisting}
+    \[
+    \begin{aligned}
+      \begin{pmatrix}1&2&3\\4&5&6\\7&8&9\end{pmatrix} \\
+      \begin{Vmatrix}\frac{1}{2}&\frac{2}{3}\\\frac{3}{4}&\frac{4}{5}\end{Vmatrix} 
+    .\end{aligned}
+    \]
+  
+    快速书写对角矩阵:
+    \begin{lstlisting}[language=] 
+      pmd 1 2 3 4 t
+      bmd 1/14<TAB> 5/14<TAB> t\end{lstlisting}
+    \[
+    \begin{aligned}
+      \begin{pmatrix}1&&&\\&2&&\\&&3&\\&&&4\end{pmatrix} \\
+      \begin{bmatrix}\frac{1}{14}&\\&\frac{5}{14}\end{bmatrix} 
+    .\end{aligned}
+    \]
+\end{document}

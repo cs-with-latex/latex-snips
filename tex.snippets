@@ -125,10 +125,10 @@ snippet template "Basic template" b
   basicstyle=\tt,
   keywordstyle=\color{purple}\bfseries,
   identifierstyle=\color{brown!80!black},
-  commentstyle=\color{gray}
+  commentstyle=\color{gray},
   showstringspaces=false,
-  numbers = left,                
-  numberstyle = \small,               
+  numbers=left,                
+  numberstyle=\small,               
 }
 \title{$1}
 \author{5eqn}
@@ -169,10 +169,10 @@ snippet --- "cdots" iA
 \cdots
 endsnippet
 
+# This is so awful!
 snippet code "Code environment" b
-\begin{lstlisting}[language=${1:cpp}] 
-  $0
-\end{lstlisting}
+\begin{lstlisting}[language=$1] 
+  $2\end{lstlisting}
 endsnippet
 
 snippet => "implies" Ai
@@ -243,7 +243,7 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 `{$1}
 endsnippet
 
-priority 100
+priority 150
 context "math()"
 snippet '([A-EI-Za-ei-z])(\d)' "auto subscript" wrA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
@@ -326,30 +326,27 @@ snippet floor "floor" iA
 \left\lfloor $1 \right\rfloor
 endsnippet
 
-priority 300
 context "math()"
-snippet dia2 "diagonal matrix" iA
-\begin{pmatrix}$1&\\\\&$2\end{pmatrix}
+snippet '(p|b|v|V)ma (.*) t' "pmat auto fill" irA
+\begin{`!p snip.rv=match.group(1)`matrix}`!p
+snip.rv=match.group(2).replace('  ', '\\\\').replace(' ', '&')
+`\end{`!p snip.rv=match.group(1)`matrix} 
 endsnippet
 
-priority 300
 context "math()"
-snippet dia3 "diagonal matrix" iA
-\begin{pmatrix}$1&&\\\\&$2&\\\\&&$3\end{pmatrix}
-endsnippet
-
-priority 300
-context "math()"
-snippet dia4 "diagonal matrix" iA
-\begin{pmatrix}$1&&&\\\\&$2&&\\\\&&$3&\\\\&&&$4\end{pmatrix}
-endsnippet
-
-snippet pmat "pmat" iA
-\begin{pmatrix} $1 \end{pmatrix} 
-endsnippet
-
-snippet bmat "bmat" iA
-\begin{bmatrix} $1 \end{bmatrix} 
+snippet '(p|b|v|V)md (.*) t' "pmat auto diagonal" irA
+\begin{`!p snip.rv=match.group(1)`matrix}`!p
+arr = match.group(2).split(' ')
+l = len(arr)
+result = ''
+for i, v in enumerate(arr):
+	if i != 0:
+		result += '\\\\'
+	result += i * '&'
+	result += v
+	result += (l - i - 1) * '&'
+snip.rv = result
+`\end{`!p snip.rv=match.group(1)`matrix} 
 endsnippet
 
 snippet lra "leftangle rightangle" iA

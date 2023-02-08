@@ -30,6 +30,9 @@ def rnb(str):
 def rcb(str):
 	return rb(str, lambda ch: ch == '{', lambda ch: ch == '}')
 
+def depth_paren(str):
+	return depth(str, lambda ch: ch == '(', lambda ch: ch == ')')
+
 def depth_curly(str):
 	return depth(str, lambda ch: ch == '{', lambda ch: ch == '}')
 
@@ -193,6 +196,11 @@ snippet pr "parentheses" Ai
 \left($1\right)
 endsnippet
 
+context "math()"
+snippet br "bracket" Ai
+\left[$1\right]
+endsnippet
+
 snippet mk "Math" wA
 $${1}$
 endsnippet
@@ -208,7 +216,7 @@ endsnippet
 
 context "math()"
 snippet ran "range" iA
-\left[$1\right]_{${2:-\infty}}^{${3:+\infty}}
+\left.$1\right|_{${2:-\infty}}^{${3:+\infty}}
 endsnippet
 
 context "math()"
@@ -251,23 +259,23 @@ endsnippet
 
 priority 100
 context "math()"
-snippet 'd([A-Za-cf-hj-z])' "auto derivative" wrA
+snippet '(?<!d)d([A-Za-cf-hj-z])' "auto derivative" wrA
 \mathrm{d}`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet 'dd([A-Za-ce-z])' "auto divided derivative" wrA
+snippet '(?<!d)dd([A-Za-ce-z])' "auto divided derivative" wrA
 \frac{\mathrm{d}}{\mathrm{d}`!p snip.rv = match.group(1)`}
 endsnippet
 
 context "math()"
-snippet 'ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
+snippet '(?<!d)ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
 \frac{\mathrm{d}`!p snip.rv = match.group(1)`}{\mathrm{d}`!p snip.rv = match.group(2)`}
 endsnippet
 
 priority 100
 context "math() and depth_curly(match.group(2)) == 0"
-snippet '(?<!t)((?:[fghFGH]|\\Phi)(?:|_.|_{.*})(?:|\^.|\^{(.*)}))(\w)' "auto function" wrA
+snippet '(?<!\S)((?:[fghFGH]|\\Phi)(?:|_.|_{.*})(?:|\^.|\^{(.*)}))(\w)' "auto function" wrA
 `!p snip.rv = match.group(1)`\\left(`!p snip.rv = match.group(3)`$1\\right)
 endsnippet
 
@@ -375,6 +383,11 @@ snippet sq "\sqrt{}" iA
 \sqrt{$1}
 endsnippet
 
+context "math()"
+snippet cr "\sqrt[3]{}" iA
+\sqrt[3]{$1}
+endsnippet
+
 priority 100
 context "math()"
 snippet sr "^2" iA
@@ -399,31 +412,31 @@ endsnippet
 priority 200
 context "math()"
 snippet '(\w)\^{(.*)}sr' "append ^2" irA
-`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`2}
+`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)` 2}
 endsnippet
 
 priority 200
 context "math()"
-snippet '(sin|cos|tan|cot|sec|csc)((?:\s|\(|\\left\()\S+(?:\s|\)|\\right\)))psr' "^2 for func" irA
-`!p snip.rv=match.group(1)`^2`!p snip.rv=match.group(2)`
+snippet '((?:\s|\(|\\left\()\S+(?:\s|\)|\\right\)))psr' "^2 for func" irA
+^2`!p snip.rv=match.group(1)`
 endsnippet
 
 priority 300
 context "math()"
-snippet "([fghFGH]|\\Phi)((?:|'+)(?:|_.|_{.*})(?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for func" irA
-`!p snip.rv=match.group(1)`^2`!p snip.rv=match.group(2)`
+snippet "((?:|_.|_{.*})(?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for func" irA
+^2`!p snip.rv=match.group(1)`
 endsnippet
 
-priority 300
+priority 400
 context "math()"
-snippet "([fghFGH]|\\Phi)\^([^{ ])((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for single powered func" irA
-`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`2}`!p snip.rv=match.group(3)`
+snippet "\^(\S)((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for single powered func" irA
+^{`!p snip.rv=match.group(1)` 2}`!p snip.rv=match.group(2)`
 endsnippet
 
-priority 300
+priority 500
 context "math()"
-snippet "([fghFGH]|\\Phi)\^{(.+)}((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for dual powered func" irA
-`!p snip.rv=match.group(1)`^{`!p snip.rv=match.group(2)`2}`!p snip.rv=match.group(3)`
+snippet "\^{(.+)}((?:\(|\\left\()\S+(?:\)|\\right\)))psr" "^2 for dual powered func" irA
+^{`!p snip.rv=match.group(1)` 2}`!p snip.rv=match.group(2)`
 endsnippet
 
 priority 100
@@ -558,25 +571,52 @@ endsnippet
 
 priority 300
 context "math()"
-snippet '(?<!\\)(pi|zeta|lambda|alpha|rho|tau|psi|omega|chi|mu|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
+snippet '(?<!\\|[A-Za-z])(pi|zeta|alpha|rho|tau|psi|omega|chi|mu|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
 endsnippet
 
 priority 300
 context "math()"
-snippet '(?<!\\)(Pi|Zeta|Lambda|Alpha|Rho|Tau|Psi|Omega|Chi|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)' "ln" rwA
+snippet '(?<!\\|[A-Za-z])(Pi|Zeta|Alpha|Rho|Tau|Psi|Omega|Chi|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)' "ln" rwA
 \\`!p snip.rv = match.group(1)`
+endsnippet
+
+priority 300
+context "math()"
+snippet vphi "varphi" iA
+\varphi
+endsnippet
+
+priority 300
+context "math()"
+snippet veps "varepsilon" iA
+\varepsilon
+endsnippet
+
+priority 200
+context "math()"
+snippet eps "epsilon" iA
+\epsilon
+endsnippet
+
+priority 200
+context "math()"
+snippet lam "lambda" iA
+\lambda
+endsnippet
+
+snippet 'ta(\d)' "task n" wrA
+(`!p snip.rv = match.group(1)`)
 endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!\\)(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
+snippet '(?<!\\|[A-Za-z])(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
 endsnippet
 
 priority 100
-context "math()"
-context "unit(match.group(2)) > 1"
+context "math() and depth_curly(match.group(2)) == 0 and depth_paren(match.group(2)) == 0 and unit(match.group(2)) > 1"
 snippet "(sin|cos|tan|cot|csc|sec|ln|log|exp|arcsin|arccos|arctan|arccot|arcsec|arccsc)\s(\S+)" "auto bracket for function" rwA
 `!p snip.rv=match.group(1)``!p 
 a, b = trim(match.group(2))

@@ -119,11 +119,16 @@ def unit(str):
 		return result
 endglobal
 
-snippet template "Basic template" b
+snippet template "Basic template" bA
 \documentclass[UTF8,a4paper,11pt]{ctexart}
 \usepackage{listings} 
 \usepackage{xcolor} 
 \usepackage{amsmath}
+\usepackage{amssymb}
+\newtheorem{definition}{定义}
+\newtheorem{theorem}{定理}
+\newtheorem{proof}{证明}
+\newtheorem{lemma}{引理}
 \lstset{
   basicstyle=\tt,
   keywordstyle=\color{purple}\bfseries,
@@ -146,10 +151,57 @@ snippet var "Variable" bA
 \newcommand{\\$1}{$2}
 endsnippet
 
+context "not math()"
+snippet def "Definition" wA
+\begin{definition}
+	$1
+\end{definition}
+$0
+endsnippet
+
+context "not math()"
+snippet 'it(\d)' "Itemize" wrA
+\begin{itemize}
+	\item $1`!p
+for i in range(int(match.group(1))-1):
+	snip += '  \item '`
+\end{itemize}
+$0
+endsnippet
+
+context "not math()"
+snippet theo "Definition" wA
+\begin{theorem}
+	$1
+\end{theorem}
+$0
+endsnippet
+
+context "not math()"
+snippet pf "Proof" wA
+\begin{proof}
+	$1
+\end{proof}
+$0
+endsnippet
+
+context "not math()"
+snippet lemma "Lemma" wA
+\begin{lemma}
+	$1
+\end{lemma}
+$0
+endsnippet
+
 snippet beg "begin{} / end{}" bA
 \\begin{$1}
-	$0
+	$2
 \\end{$1}
+$0
+endsnippet
+
+snippet cnt "Counter" bA
+\setcounter{section}{$1}
 endsnippet
 
 snippet sec "Section" bA
@@ -162,14 +214,40 @@ snippet ssec "Sub section" bA
   $0
 endsnippet
 
+# set theory region
+
+context "math()"
+snippet pec "prec" iA
+\prec 
+endsnippet
+
+context "math()"
+snippet ale "aleph" iA
+\aleph
+endsnippet
+
+context "math()"
+snippet pe= "prec with =" iA
+\preccurlyeq 
+endsnippet
+
+context "math()"
+snippet |\ "upharpoonright" iA
+\upharpoonright 
+endsnippet
+
+# end region
+
 priority 100
+context "math()"
 snippet ... "ldots" iA
-\ldots
+\ldots 
 endsnippet
 
 priority 100
+context "math()"
 snippet --- "cdots" iA
-\cdots
+\cdots 
 endsnippet
 
 # This is so awful!
@@ -209,14 +287,29 @@ snippet dm "Math" wA
 \[
 \begin{aligned}
   $1
-.\end{aligned}
+\end{aligned}
 \]
 $0
 endsnippet
 
 context "math()"
-snippet ran "range" iA
+snippet rn "range" iA
 \left.$1\right|_{${2:-\infty}}^{${3:+\infty}}
+endsnippet
+
+context "math()"
+snippet dom "domain" iA
+\mathrm{dom}
+endsnippet
+
+context "math()"
+snippet ran "range" iA
+\mathrm{ran}
+endsnippet
+
+context "math()"
+snippet fld "field" iA
+\mathrm{fld}
 endsnippet
 
 context "math()"
@@ -226,6 +319,11 @@ endsnippet
 
 snippet / "Fraction" i
 \\frac{${VISUAL}}{$1}
+endsnippet
+
+context "math()"
+snippet \- "setminus" iA
+\setminus 
 endsnippet
 
 priority 800
@@ -251,33 +349,38 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 `{$1}
 endsnippet
 
+context "math()"
+snippet pm "plus and minus" iA
+\pm 
+endsnippet
+
 priority 150
 context "math()"
-snippet '([A-EI-Za-ei-z])(\d)' "auto subscript" wrA
+snippet '([A-Za-z])(\d)' "auto subscript" wrA
 `!p snip.rv = match.group(1)`_`!p snip.rv = match.group(2)`
 endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!d)d([A-Za-cf-hj-z])' "auto derivative" wrA
+snippet '(?<!\w)d([A-Za-cf-hj-n-pz])' "auto derivative" wrA
 \mathrm{d}`!p snip.rv = match.group(1)`
 endsnippet
 
 context "math()"
-snippet '(?<!d)dd([A-Za-ce-z])' "auto divided derivative" wrA
+snippet '(?<!\w)dd([A-Za-ce-z])' "auto divided derivative" wrA
 \frac{\mathrm{d}}{\mathrm{d}`!p snip.rv = match.group(1)`}
 endsnippet
 
 context "math()"
-snippet '(?<!d)ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
+snippet '(?<!\w)ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
 \frac{\mathrm{d}`!p snip.rv = match.group(1)`}{\mathrm{d}`!p snip.rv = match.group(2)`}
 endsnippet
 
-priority 100
-context "math() and depth_curly(match.group(2)) == 0"
-snippet '(?<!\S)((?:[fghFGH]|\\Phi)(?:|_.|_{.*})(?:|\^.|\^{(.*)}))(\w)' "auto function" wrA
-`!p snip.rv = match.group(1)`\\left(`!p snip.rv = match.group(3)`$1\\right)
-endsnippet
+#priority 100
+#context "math() and depth_curly(match.group(2)) == 0"
+#snippet '(?<!\w)((?:[fghFGH]|\\Phi)(?:|_.|_{.*})(?:|\^.|\^{(.*)}))([A-Za-km-z0-9])' "auto function" wrA
+#`!p snip.rv = match.group(1)`\\left(`!p snip.rv = match.group(3)`$1\\right)
+#endsnippet
 
 snippet sympy "sympyblock " w
 sympy $1 sympy
@@ -295,8 +398,14 @@ snip.rv = eval('latex(' + match.group(1).replace('\\', '').replace('^', '**').re
 `
 endsnippet
 
+priority 300
 snippet mop "mathop" iA
 \mathop{$1}
+endsnippet
+
+priority 100
+snippet op "oplus" iA
+\oplus 
 endsnippet
 
 snippet max "max" iA
@@ -335,30 +444,40 @@ snippet floor "floor" iA
 endsnippet
 
 context "math()"
-snippet '(p|b|v|V)ma (.*) t' "pmat auto fill" irA
+snippet '(p|b|v|V)a (.*) t' "pmat auto fill" irA
 \begin{`!p snip.rv=match.group(1)`matrix}`!p
-snip.rv=match.group(2).replace('  ', '\\\\').replace(' ', '&')
-`\end{`!p snip.rv=match.group(1)`matrix} 
+snip.rv=match.group(2) \
+	.replace(' - ', ' \\cdots ') \
+	.replace(' | ', ' \\vdots ') \
+	.replace(' \\ ', ' \\ddots ') \
+	.replace('  ', '\\\\') \
+	.replace(' ', '&') \
+	.replace(';', ' ')
+`\end{`!p snip.rv=match.group(1)`matrix}
 endsnippet
 
 context "math()"
-snippet '(p|b|v|V)md (.*) t' "pmat auto diagonal" irA
+snippet '(p|b|v|V)d (.*) t' "pmat auto diagonal" irA
 \begin{`!p snip.rv=match.group(1)`matrix}`!p
-arr = match.group(2).split(' ')
+arr = match.group(2) \
+	.replace(' - ', ' \\cdots ') \
+	.replace(' | ', ' \\vdots ') \
+	.replace(' \\ ', ' \\ddots ') \
+	.split(' ')
 l = len(arr)
 result = ''
 for i, v in enumerate(arr):
 	if i != 0:
 		result += '\\\\'
 	result += i * '&'
-	result += v
+	result += v.replace(';', ' ')
 	result += (l - i - 1) * '&'
 snip.rv = result
 `\end{`!p snip.rv=match.group(1)`matrix} 
 endsnippet
 
 snippet lra "leftangle rightangle" iA
-\left<${1:${VISUAL}} \right>
+\left<${1:${VISUAL}}\right>
 endsnippet
 
 context "math()"
@@ -367,15 +486,15 @@ snippet conj "conjugate" iA
 endsnippet
 
 snippet sum "sum" iA
-\sum_{${1:i=${2:1}}}^{${3:\infty}}
+\sum_{${1:i}=${2:1}}^{${3:\infty}}
 endsnippet
 
 snippet lim "limit" iA
-\lim_{${1:n} \to ${2:\infty}} 
+\lim_{${1:n} \to ${2:\infty}}
 endsnippet
 
-snippet prod "product" iA
-\prod_{${1:i=${2:1}}}^{${3:\infty}} 
+snippet pod "product" iA
+\prod_{${1:i}=${2:1}}^{${3:\infty}}
 endsnippet
 
 context "math()"
@@ -528,13 +647,8 @@ snippet >= "geq" iA
 endsnippet
 
 context "math()"
-snippet EE "geq" iA
-\exists 
-endsnippet
-
-context "math()"
-snippet AA "forall" iA
-\forall 
+snippet ml "mathL" iA
+\mathcal{L}
 endsnippet
 
 context "math()"
@@ -548,8 +662,15 @@ snippet xx "cross" iA
 endsnippet
 
 priority 100
+context "math()"
 snippet ** "cdot" iA
 \cdot 
+endsnippet
+
+priority 200
+context "not math()"
+snippet ** "bold" iA
+\textbf{$1}
 endsnippet
 
 context "math()"
@@ -569,43 +690,8 @@ snippet int "integral" iA
 \int
 endsnippet
 
-priority 300
-context "math()"
-snippet '(?<!\\|[A-Za-z])(pi|zeta|alpha|rho|tau|psi|omega|chi|mu|nabla|phi|theta|beta|gamma|eta|xi|sigma|delta)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-priority 300
-context "math()"
-snippet '(?<!\\|[A-Za-z])(Pi|Zeta|Alpha|Rho|Tau|Psi|Omega|Chi|Phi|Theta|Beta|Gamma|Eta|Xi|Sigma|Delta)' "ln" rwA
-\\`!p snip.rv = match.group(1)`
-endsnippet
-
-priority 300
-context "math()"
-snippet vphi "varphi" iA
-\varphi
-endsnippet
-
-priority 300
-context "math()"
-snippet veps "varepsilon" iA
-\varepsilon
-endsnippet
-
-priority 200
-context "math()"
-snippet eps "epsilon" iA
-\epsilon
-endsnippet
-
-priority 200
-context "math()"
-snippet lam "lambda" iA
-\lambda
-endsnippet
-
-snippet 'ta(\d)' "task n" wrA
+context "not math()"
+snippet 't(\d)' "task n" brA
 (`!p snip.rv = match.group(1)`)
 endsnippet
 
@@ -648,18 +734,6 @@ snippet '(?<!\\)acot' "arccot" rwA
 \arccot 
 endsnippet
 
-priority 200
-context "math()"
-snippet '(?<!\\)acsc' "arccsc" rwA
-\arccsc 
-endsnippet
-
-priority 200
-context "math()"
-snippet '(?<!\\)asec' "arcsec" rwA
-\arcsec 
-endsnippet
-
 priority 100
 context "math()"
 snippet -> "to" iA
@@ -688,7 +762,7 @@ snippet comp "complement" iA
 endsnippet
 
 context "math()"
-snippet tran "transpose" iA
+snippet tr "transpose" iA
 ^{T}
 endsnippet
 
@@ -714,59 +788,103 @@ snippet set "set" iA
 endsnippet
 
 context "math()"
+snippet c=c "subseteq" Ai
+\subseteq 
+endsnippet
+
+context "math()"
+snippet ~= "approx" Ai
+\approx 
+endsnippet
+
+context "math()"
 snippet cc "subset" Ai
 \subset 
 endsnippet
 
-snippet notin "not in " iA
-\not\in 
+context "math()"
+snippet not "not" iA
+\not
 endsnippet
 
+priority 200
 context "math()"
 snippet inn "in " iA
 \in 
 endsnippet
 
-snippet NN "n" iA
-\N
+context "math()"
+snippet and "wedge" iA
+\wedge 
 endsnippet
 
+context "math()"
+snippet or "vee" iA
+\vee 
+endsnippet
+
+context "math()"
+snippet all "for all" iA
+\forall 
+endsnippet
+
+context "math()"
+snippet any "exists" iA
+\exists 
+endsnippet
+
+context "math()"
+snippet NN "n" iA
+\mathbb{N}
+endsnippet
+
+priority 100
+context "math()"
 snippet nn "cap" iA
 \cap 
 endsnippet
 
-snippet UU "cup" iA
+context "math()"
+snippet uu "cup" iA
 \cup 
 endsnippet
 
+context "math()"
 snippet uuu "bigcup" iA
 \bigcup_{${1:i \in ${2: I}}}
 endsnippet
 
+context "math()"
 snippet nnn "bigcap" iA
 \bigcap_{${1:i \in ${2: I}}}
 endsnippet
 
+context "math()"
 snippet OO "emptyset" iA
-\O
+\varnothing
 endsnippet
 
+context "math()"
 snippet RR "real" iA
-\R
+\mathbb{R}
 endsnippet
 
+context "math()"
 snippet QQ "Q" iA
-\Q
+\mathbb{Q}
 endsnippet
 
+context "math()"
 snippet ZZ "Z" iA
-\Z
+\mathbb{Z}
 endsnippet
 
+context "math()"
 snippet <! "normal" iA
 \triangleleft 
 endsnippet
 
+context "math()"
 snippet <> "hokje" iA
 \diamond 
 endsnippet
@@ -778,6 +896,7 @@ snippet case "cases" iA
 \end{cases}
 endsnippet
 
+context "math()"
 snippet cvec "column vector" iA
 \begin{pmatrix} $1 \\\\ $2 \\\\ \vdots\\\\ $3 \end{pmatrix}
 endsnippet

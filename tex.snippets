@@ -121,6 +121,7 @@ endglobal
 
 snippet template "Basic template" bA
 \documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage[margin=1in,xetex]{geometry}
 \usepackage{listings} 
 \usepackage{xcolor} 
 \usepackage{amsmath}
@@ -142,8 +143,8 @@ snippet template "Basic template" bA
 \author{5eqn}
 \date{\today}
 \begin{document}
-  \maketitle
-  $0
+\maketitle
+$0
 \end{document}
 endsnippet
 
@@ -162,7 +163,7 @@ endsnippet
 context "not math()"
 snippet 'it(\d)' "Itemize" wrA
 \begin{itemize}
-	\item $1`!p
+  \item $1`!p
 for i in range(int(match.group(1))-1):
 	snip += '  \item '`
 \end{itemize}
@@ -172,7 +173,7 @@ endsnippet
 context "not math()"
 snippet theo "Definition" wA
 \begin{theorem}
-	$1
+$1
 \end{theorem}
 $0
 endsnippet
@@ -180,7 +181,7 @@ endsnippet
 context "not math()"
 snippet pf "Proof" wA
 \begin{proof}
-	$1
+$1
 \end{proof}
 $0
 endsnippet
@@ -188,14 +189,14 @@ endsnippet
 context "not math()"
 snippet lemma "Lemma" wA
 \begin{lemma}
-	$1
+$1
 \end{lemma}
 $0
 endsnippet
 
 snippet beg "begin{} / end{}" bA
 \\begin{$1}
-	$2
+$2
 \\end{$1}
 $0
 endsnippet
@@ -206,12 +207,12 @@ endsnippet
 
 snippet sec "Section" bA
 \section{$1}
-  $0
+$0
 endsnippet
 
 snippet ssec "Sub section" bA
 \subsection{$1}
-  $0
+$0
 endsnippet
 
 # set theory region
@@ -251,9 +252,10 @@ snippet --- "cdots" iA
 endsnippet
 
 # This is so awful!
-snippet code "Code environment" b
+snippet code "Code environment" bA
 \begin{lstlisting}[language=$1] 
-  $2\end{lstlisting}
+$2
+\end{lstlisting}
 endsnippet
 
 snippet => "implies" Ai
@@ -362,7 +364,7 @@ endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!\w)d([A-Za-cf-hj-n-pz])' "auto derivative" wrA
+snippet '(?<!\w)d([A-Za-cf-hj-np-z])' "auto derivative" wrA
 \mathrm{d}`!p snip.rv = match.group(1)`
 endsnippet
 
@@ -513,18 +515,21 @@ snippet sr "^2" iA
 ^{2}
 endsnippet
 
+priority 100
 context "math()"
 snippet "'" "auto derivative" irA
 ^{\prime}
 endsnippet
 
+priority 200
 context "math()"
-snippet "\^{\\prime}'" "auto double derivative" irA
+snippet "\^{[^{]*\\prime}'" "auto double derivative" irA
 ^{\prime\prime}
 endsnippet
 
+priority 300
 context "math()"
-snippet "\^{\\prime\\prime}'" "auto multiple derivative" irA
+snippet "\^{[^{]*\\prime\\prime}'" "auto multiple derivative" irA
 ^{($1)}
 endsnippet
 
@@ -687,7 +692,7 @@ endsnippet
 priority 100
 context "math()"
 snippet int "integral" iA
-\int
+\int 
 endsnippet
 
 context "not math()"
@@ -701,14 +706,14 @@ snippet '(?<!\\|[A-Za-z])(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
 endsnippet
 
-priority 100
-context "math() and depth_curly(match.group(2)) == 0 and depth_paren(match.group(2)) == 0 and unit(match.group(2)) > 1"
-snippet "(sin|cos|tan|cot|csc|sec|ln|log|exp|arcsin|arccos|arctan|arccot|arcsec|arccsc)\s(\S+)" "auto bracket for function" rwA
-`!p snip.rv=match.group(1)``!p 
-a, b = trim(match.group(2))
-snip.rv = a + '\\left(' + b
-`$1\\right)
-endsnippet
+# priority 100
+# context "math() and depth_curly(match.group(2)) == 0 and depth_paren(match.group(2)) == 0 and unit(match.group(2)) > 1"
+# snippet "(sin|cos|tan|cot|csc|sec|ln|log|exp|arcsin|arccos|arctan|arccot|arcsec|arccsc)\s(\S+)" "auto bracket for function" rwA
+# `!p snip.rv=match.group(1)``!p 
+# a, b = trim(match.group(2))
+# snip.rv = a + '\\left(' + b
+# `$1\\right)
+# endsnippet
 
 priority 200
 context "math()"

@@ -773,7 +773,7 @@ endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!\\|[A-Za-z])(sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
+snippet '(?<!\\|[A-Za-z])(sh|ch|th|sin|cos|tan|cot|csc|sec|ln|log|exp)' "ln" rwA
 \\`!p snip.rv = match.group(1)` 
 endsnippet
 
@@ -808,6 +808,26 @@ priority 200
 context "math()"
 snippet '(?<!\\)acot' "arccot" rwA
 \arccot 
+endsnippet
+
+# Support for arsh, arch, arth
+
+priority 200
+context "math()"
+snippet '(?<!\\)arsh' "arsh" rwA
+\mathrm{arsh}
+endsnippet
+
+priority 200
+context "math()"
+snippet '(?<!\\)arch' "arch" rwA
+\mathrm{arch}
+endsnippet
+
+priority 200
+context "math()"
+snippet '(?<!\\)arth' "arth" rwA
+\mathrm{arth}
 endsnippet
 
 priority 100

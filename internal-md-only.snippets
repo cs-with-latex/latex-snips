@@ -1,0 +1,19 @@
+global !p
+def math():
+	return vim.eval('vimtex#syntax#in_mathzone()') == '1'
+endglobal
+
+context "not math()"
+snippet dm "Math" wA
+$$
+\begin{align*}
+$1
+\end{align*}
+$$
+$0
+endsnippet
+
+context "not math()"
+snippet mk "Math" wA
+$$1$
+endsnippet

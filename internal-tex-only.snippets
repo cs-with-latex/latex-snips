@@ -41,7 +41,7 @@ endsnippet
 context "not math()"
 snippet def "Definition" wA
 \begin{definition}
-	$1
+$1
 \end{definition}
 $0
 endsnippet
@@ -49,9 +49,9 @@ endsnippet
 context "not math()"
 snippet 'it(\d)' "Itemize" wrA
 \begin{itemize}
-  \item $1`!p
+\item $1`!p
 for i in range(int(match.group(1))-1):
-	snip += '  \item '`
+	snip += '\item '`
 \end{itemize}
 $0
 endsnippet
@@ -122,7 +122,7 @@ context "not math()"
 snippet dm "Math" wA
 \[
 \begin{aligned}
-  $1
+$1
 \end{aligned}
 \]
 $0

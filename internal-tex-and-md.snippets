@@ -225,6 +225,11 @@ snippet u; "upsilon" iA
 endsnippet
 
 context "math()"
+snippet vf "varphi" iA
+\varphi
+endsnippet
+
+context "math()"
 snippet f; "phi" iA
 \phi
 endsnippet
@@ -326,6 +331,11 @@ endsnippet
 
 # end region
 
+context "math()"
+snippet con "const" iA
+\equiv 
+endsnippet
+
 priority 100
 context "math()"
 snippet ... "ldots" iA
@@ -369,6 +379,13 @@ snippet rn "range" iA
 endsnippet
 
 context "math()"
+priority 200
+snippet '(\w)wh' "where" irA
+\left.`!p snip.rv = match.group(1)`\right|_{$1}
+endsnippet
+
+context "math()"
+priority 100
 snippet wh "where" iA
 \left.$1\right|_{$2}
 endsnippet
@@ -452,6 +469,27 @@ snippet '(?<!\w)ddd([A-Za-z])([A-Za-z])' "auto divided double derivative" wrA
 \frac{\mathrm{d}`!p snip.rv = match.group(1)`}{\mathrm{d}`!p snip.rv = match.group(2)`}
 endsnippet
 
+priority 100
+context "math()"
+snippet '(?<!\w)p([A-Zb-hj-oq-qs-z])' "auto partial derivative" wrA
+\partial `!p snip.rv = match.group(1)`
+endsnippet
+
+context "math()"
+snippet '(?<!\w)pp([A-Za-oq-z])' "auto divided partial derivative" wrA
+\frac{\partial}{\partial `!p snip.rv = match.group(1)`}
+endsnippet
+
+context "math()"
+snippet '(?<!\w)ppp([A-Za-z])([A-Za-z])' "auto divided double partial derivative" wrA
+\frac{\partial `!p snip.rv = match.group(1)`}{\partial `!p snip.rv = match.group(2)`}
+endsnippet
+
+context "math()"
+snippet pa "partial" wA
+\partial 
+endsnippet
+
 context "math()"
 snippet sympy "sympyblock " wA
 sympy $1 sympy
@@ -520,7 +558,22 @@ snippet floor "floor" iA
 endsnippet
 
 context "math()"
-snippet '(p|b|v|V)a (.*) t' "pmat auto fill" irA
+snippet '(p|b|v|V)mat-33' "pmat auto fill" irA
+\begin{`!p snip.rv=match.group(1)`matrix}
+$1&
+$2&
+$3\\\\
+$4&
+$5&
+$6\\\\
+$7&
+$8&
+$9
+\end{`!p snip.rv=match.group(1)`matrix}
+endsnippet
+
+context "math()"
+snippet '(p|b|v|V)ma (.*) t' "pmat auto fill" irA
 \begin{`!p snip.rv=match.group(1)`matrix}`!p
 snip.rv=match.group(2) \
 	.replace(' - ', ' \\cdots ') \
@@ -533,7 +586,7 @@ snip.rv=match.group(2) \
 endsnippet
 
 context "math()"
-snippet '(p|b|v|V)d (.*) t' "pmat auto diagonal" irA
+snippet '(p|b|v|V)md (.*) t' "pmat auto diagonal" irA
 \begin{`!p snip.rv=match.group(1)`matrix}`!p
 arr = match.group(2) \
 	.replace(' - ', ' \\cdots ') \
@@ -585,6 +638,11 @@ endsnippet
 context "math()"
 snippet cr "\sqrt[3]{}" iA
 \sqrt[3]{$1}
+endsnippet
+
+context "math()"
+snippet nq "\sqrt[n]{}" iA
+\sqrt[$1]{$2}
 endsnippet
 
 priority 100
@@ -985,15 +1043,13 @@ snippet <! "normal" iA
 endsnippet
 
 context "math()"
-snippet <> "hokje" iA
-\diamond 
+snippet <> "<=>" iA
+\Leftrightarrow 
 endsnippet
 
 context "math()"
 snippet case "cases" iA
-\begin{cases}
-	$1
-\end{cases}
+\begin{cases}$1\end{cases}
 endsnippet
 
 context "math()"

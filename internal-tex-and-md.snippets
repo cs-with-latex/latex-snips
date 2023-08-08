@@ -350,17 +350,17 @@ endsnippet
 
 context "math()"
 snippet => "implies" Ai
-\implies
+\implies 
 endsnippet
 
 context "math()"
 snippet =< "implied by" Ai
-\impliedby
+\impliedby 
 endsnippet
 
 context "math()"
 snippet iff "iff" Ai
-\iff
+\iff 
 endsnippet
 
 context "math()"
@@ -443,7 +443,7 @@ snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
 endsnippet
 
 context "math()"
-snippet pm "plus and minus" iA
+snippet +- "plus and minus" iA
 \pm 
 endsnippet
 
@@ -471,7 +471,7 @@ endsnippet
 
 priority 100
 context "math()"
-snippet '(?<!\w)p([A-Zb-hj-oq-qs-z])' "auto partial derivative" wrA
+snippet '(?<!\w)p([A-Zb-hj-ln-oq-qs-z])' "auto partial derivative" wrA
 \partial `!p snip.rv = match.group(1)`
 endsnippet
 
@@ -569,6 +569,16 @@ $6\\\\
 $7&
 $8&
 $9
+\end{`!p snip.rv=match.group(1)`matrix}
+endsnippet
+
+context "math()"
+snippet '(p|b|v|V)mat-22' "pmat auto fill" irA
+\begin{`!p snip.rv=match.group(1)`matrix}
+$1&
+$2\\\\
+$3&
+$4
 \end{`!p snip.rv=match.group(1)`matrix}
 endsnippet
 
@@ -823,6 +833,30 @@ snippet dint "integral" iA
 \int_{${1:-\infty}}^{${2:+\infty}}
 endsnippet
 
+priority 300
+context "math()"
+snippet oint "ring integral" iA
+\oint_{${1:L}}
+endsnippet
+
+priority 300
+context "math()"
+snippet oiint "double ring integral" iA
+\oiint_{${1:\Sigma}}
+endsnippet
+
+priority 300
+context "math()"
+snippet iiint "triple integral" iA
+\iiint_{${1:\Omega}}
+endsnippet
+
+priority 200
+context "math()"
+snippet iint "double integral" iA
+\iint_{${1:D}}
+endsnippet
+
 priority 100
 context "math()"
 snippet int "integral" iA
@@ -1052,6 +1086,7 @@ snippet case "cases" iA
 \begin{cases}$1\end{cases}
 endsnippet
 
+priority 200
 context "math()"
 snippet cvec "column vector" iA
 \begin{pmatrix} $1 \\\\ $2 \\\\ \vdots\\\\ $3 \end{pmatrix}
@@ -1079,6 +1114,18 @@ priority 100
 context "math()"
 snippet "([a-zA-Z])hat" "hat" riA
 \hat{`!p snip.rv=match.group(1)`}
+endsnippet
+
+priority 10
+context "math()"
+snippet "vec" "vector" riA
+\vec{$1}
+endsnippet
+
+priority 100
+context "math()"
+snippet "([a-zA-Z])vec" "vector" riA
+\vec{`!p snip.rv=match.group(1)`}
 endsnippet
 
 context "math()"

@@ -1,6 +1,47 @@
-snippet ttm "Tag of Time" wA
+snippet ntm "New Time" wA
 #tag[`!p
 import datetime
 snip.rv = datetime.datetime.now().strftime("%m.%d, %H:%M")
-`]
+`] 
+endsnippet
+
+snippet ntg "New Tag" wA
+#tag[$1] 
+endsnippet
+
+snippet rtg "Red Tag" wA
+#tag(color: "red")[$1] 
+endsnippet
+
+snippet btg "Blue Tag" wA
+#tag(color: "blue")[$1] 
+endsnippet
+
+snippet ftg "Full Tag" wA
+#tag(color: "${1:green}")[$2] 
+endsnippet
+
+snippet nsc "New Sect" wA
+#sect[$1] 
+endsnippet
+
+snippet fsc "Full Sect" wA
+#sect(title: "$1", color: "${2:red}")[$3] 
+endsnippet
+
+snippet csc "Complementary Sect" wA
+#sect(title: "补充", color: "blue")[$1] 
+endsnippet
+
+snippet nfn "New Footnote" wA
+#footnote[$1] 
+endsnippet
+
+snippet img "Image" wA
+#figure(
+	image("res/$1.png", width: 50%),
+	caption: [
+		$2
+	],
+)
 endsnippet
